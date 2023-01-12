@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+
 namespace CKK.Logic.Models
 {
     public class ShoppingCartItem
@@ -30,6 +31,11 @@ namespace CKK.Logic.Models
         public void SetProduct(Product product)
         {
             _product = product;
+        }
+
+        public decimal GetTotal()
+        {
+            return _quantity * _product.GetPrice();
         }
     }
 }
