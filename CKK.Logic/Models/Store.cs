@@ -29,14 +29,7 @@ namespace CKK.Logic.Models
         {
             _name = name;
         }
-        /*AddStoreItem - add item
-         * adds product to next available product - product1,product2,product3
-         * if there is no available product it will not add the product
-         * if there is an item in spot 2 but not 1 or 3 it should add to 1(the next available spot)
-         * 
-         * if product 1 is null
-         *      product 1 = product
-        */
+   
         public void AddStoreItem(Product prod)
         {
             if (_product1 == null)
@@ -52,12 +45,7 @@ namespace CKK.Logic.Models
                 _product3 = prod;
             }
         }
-        /*RemoveStoreItem - remove item
-         * Removes product from desired spot
-         * if there are no products does nothing 
-         * if product is out of range does nothing 
-         * it should not shift items up in the list when things are removed
-         */
+
         public void RemoveStoreItem(int productNum)
         {
             if (productNum == 1 && _product1 != null)
@@ -74,17 +62,7 @@ namespace CKK.Logic.Models
             }
 
         }
-        /*GetStoreItem - gets item 
-         * This method gets the product by it's position(product1,product2,product3)
-         * should return correct product
-         * if it is an invalid product number return null
-         * if there is not an item in the desired spot return nulls
-         * 
-         * if product number == 1 and product 1 is != null
-         *  return product 1
-         * else 
-         *  return null
-         */
+    
         public Product GetStoreItem(int productNum)
         {
             if (productNum == 1 && _product1 != null)
@@ -104,13 +82,7 @@ namespace CKK.Logic.Models
                 return null;
             }
         }
-        /*FindStoreItemById - gets from ids
-         * This will return the product that has the same id(if there is one)
-         * if there are no items with that id then return null
-         * if there is more than one item with that id return the first
-         * 
-         * if id == product1.id
-         */
+   
         public Product FindStoreItemById(int id)
         {
             if (id == _product1.GetId())
