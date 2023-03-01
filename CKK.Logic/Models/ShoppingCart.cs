@@ -21,42 +21,42 @@ namespace CKK.Logic.Models
 
         public ShoppingCartItem AddProduct(Product prod, int quantity)
         {
-            if (quantity < 1)
+            if(quantity > 0)
             {
-                return null;
-            }
-            else if (prod == _product1.GetProduct())
-            {
-                _product1.SetQuantity(_product1.GetQuantity() + quantity);
-                return _product1;
-            }
-            else if (prod == _product2.GetProduct())
-            {
-                _product2.SetQuantity(_product2.GetQuantity() + quantity);
-                return _product2;
-            }
-            else if (prod == _product3.GetProduct())
-            {
-                _product3.SetQuantity(_product3.GetQuantity() + quantity);
-                return _product3;
-            }
-            else if (_product1.GetProduct() == null)
-            {
-                _product1.SetProduct(prod);
-                _product1.SetQuantity(quantity);
-                return _product1;
-            }
-            else if (_product2.GetProduct() == null)
-            {
-                _product2.SetProduct(prod);
-                _product2.SetQuantity(quantity);
-                return _product2;
-            }
-            else if (_product3.GetProduct() == null)
-            {
-                _product3.SetProduct(prod);
-                _product3.SetQuantity(quantity);
-                return _product3;
+                if(_product1 != null && _product1.GetProduct() == prod)
+                {
+                    _product1.SetQuantity(_product1.GetQuantity() + quantity);
+                    return _product1;
+                }
+                else if(_product2 != null && _product2.GetProduct() == prod)
+                {
+                    _product2.SetQuantity(_product2.GetQuantity() + quantity);
+                    return _product2;
+                }
+                else if(_product3 != null && _product3.GetProduct() == prod)
+                {
+                    _product3.SetQuantity(_product3.GetQuantity() + quantity);
+                    return _product3;
+                }
+                else if(_product1 == null)
+                {
+                    _product1 = new ShoppingCartItem(prod, quantity);
+                    return _product1;
+                } 
+                else if(_product2 == null)
+                {
+                    _product2 = new ShoppingCartItem(prod, quantity);
+                    return _product2;
+                }
+                else if(_product3 == null)
+                {
+                    _product3 = new ShoppingCartItem(prod, quantity);
+                    return _product3;
+                }
+                else
+                {
+                    return null;
+                }
             }
             else
             {
@@ -75,17 +75,17 @@ namespace CKK.Logic.Models
             {
                 return null;
             }
-            else if (_product1.GetProduct() == prod)
+            else if (_product1 != null)
             {
                 _product1.SetQuantity(_product1.GetQuantity() - quantity);
                 return _product1;
             }
-            else if (_product2.GetProduct() == prod)
+            else if (_product2 != null)
             {
                 _product2.SetQuantity(_product2.GetQuantity() - quantity);
                 return _product2;
             }
-            else if (_product3.GetProduct() == prod)
+            else if (_product3 != null)
             {
                 _product3.SetQuantity(_product3.GetQuantity() - quantity);
                 return _product3;
@@ -123,8 +123,22 @@ namespace CKK.Logic.Models
 
         public ShoppingCartItem GetProduct(int productNum)
         {
-            return null;
+            if (productNum == 1)
+            {
+                return _product1;
+            }
+            else if (productNum == 2)
+            {
+                return _product2;
+            }
+            else if (productNum == 3)
+            {
+                return _product3;
+            }
+            else
+            {
+                return null;
+            }
         }
-
     }
 }
