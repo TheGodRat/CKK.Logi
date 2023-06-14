@@ -48,10 +48,18 @@ namespace CKK.Logic.Models
 
         public StoreItem RemoveStoreItem(int id, int quantity)
         {
-            if (Items.Contains(FindStoreItemById(id)))
+            if (FindStoreItemById(id) != null)
             {
-                FindStoreItemById(id).SetQuantity(FindStoreItemById(id).GetQuantity() - quantity);
-                return FindStoreItemById(id);
+                if(FindStoreItemById(id).GetQuantity() - quantity < 0)
+                {
+                    FindStoreItemById(id).SetQuantity(0);
+                    return FindStoreItemById(id);
+                }
+                else
+                {
+                    FindStoreItemById(id).SetQuantity(FindStoreItemById(id).GetQuantity() - quantity);
+                    return FindStoreItemById(id);
+                }
             }
             else
             {
