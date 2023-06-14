@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CKK.Logic.Models
 {
     public class ShoppingCart
     {
         private Customer _customer;
-        private ShoppingCartItem _product1;
-        private ShoppingCartItem _product2;
-        private ShoppingCartItem _product3;
+        private List<ShoppingCartItem> Products = new();
 
         public ShoppingCart(Customer cust)
         {
@@ -23,39 +23,16 @@ namespace CKK.Logic.Models
         {
             if(quantity > 0)
             {
-                if(_product1 != null && _product1.GetProduct() == prod)
+                if(GetProductById(prod.GetId()) != null)
                 {
-                    _product1.SetQuantity(_product1.GetQuantity() + quantity);
-                    return _product1;
-                }
-                else if(_product2 != null && _product2.GetProduct() == prod)
-                {
-                    _product2.SetQuantity(_product2.GetQuantity() + quantity);
-                    return _product2;
-                }
-                else if(_product3 != null && _product3.GetProduct() == prod)
-                {
-                    _product3.SetQuantity(_product3.GetQuantity() + quantity);
-                    return _product3;
-                }
-                else if(_product1 == null)
-                {
-                    _product1 = new ShoppingCartItem(prod, quantity);
-                    return _product1;
-                } 
-                else if(_product2 == null)
-                {
-                    _product2 = new ShoppingCartItem(prod, quantity);
-                    return _product2;
-                }
-                else if(_product3 == null)
-                {
-                    _product3 = new ShoppingCartItem(prod, quantity);
-                    return _product3;
+                    GetProductById(prod.GetId()).SetQuantity(GetProductById(prod.GetId()).GetQuantity() + quantity);
+                    return GetProductById(prod.GetId());
                 }
                 else
                 {
-                    return null;
+                    ShoppingCartItem shoppingCartItem = new ShoppingCartItem(prod, quantity);
+                    Products.Add(shoppingCartItem);
+                    return shoppingCartItem;
                 }
             }
             else
@@ -69,26 +46,22 @@ namespace CKK.Logic.Models
             return AddProduct(prod, 1);
         }
 
-        public ShoppingCartItem RemoveProduct(Product prod, int quantity)
+        public ShoppingCartItem RemoveProduct(int id, int quantity)
         {
-            if (quantity < 1)
+            if (GetProductById(id) != null && quantity > 0)
             {
-                return null;
-            }
-            else if (_product1 != null)
-            {
-                _product1.SetQuantity(_product1.GetQuantity() - quantity);
-                return _product1;
-            }
-            else if (_product2 != null)
-            {
-                _product2.SetQuantity(_product2.GetQuantity() - quantity);
-                return _product2;
-            }
-            else if (_product3 != null)
-            {
-                _product3.SetQuantity(_product3.GetQuantity() - quantity);
-                return _product3;
+                if (GetProductById(id).GetQuantity() - quantity <= 0)
+                {
+                    GetProductById(id).SetQuantity(0);
+                    Products.Remove(GetProductById(id));
+                    ShoppingCartItem shoppingCartItem = new(null, 0);
+                    return shoppingCartItem;
+                }
+                else
+                {
+                    GetProductById(id).SetQuantity(GetProductById(id).GetQuantity() - quantity);
+                    return GetProductById(id);
+                }
             }
             else
             {
@@ -98,47 +71,30 @@ namespace CKK.Logic.Models
 
         public ShoppingCartItem GetProductById(int id)
         {
-            if (_product1.GetProduct().GetId() == id)
+            foreach (var cartItem in Products)
             {
-                return _product1;
+                if (cartItem.GetProduct().GetId() == id)
+                {
+                    return cartItem;
+                }
             }
-            else if (_product2.GetProduct().GetId() == id)
-            {
-                return _product2;
-            }
-            else if (_product3.GetProduct().GetId() == id)
-            {
-                return _product3;
-            }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public decimal GetTotal()
         {
-            return _product1.GetTotal() + _product2.GetTotal() + _product3.GetTotal();
+            decimal total = 0;
+
+            foreach (ShoppingCartItem cartItem in Products)
+            {
+                total += cartItem.GetTotal();
+            }
+            return total;
         }
 
-        public ShoppingCartItem GetProduct(int productNum)
+        public List<ShoppingCartItem> GetProducts()
         {
-            if (productNum == 1)
-            {
-                return _product1;
-            }
-            else if (productNum == 2)
-            {
-                return _product2;
-            }
-            else if (productNum == 3)
-            {
-                return _product3;
-            }
-            else
-            {
-                return null;
-            }
+            return Products;
         }
     }
 }

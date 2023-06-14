@@ -32,26 +32,41 @@ namespace CKK.Logic.Models
    
         public StoreItem AddStoreItem(Product prod, int quantity)
         {
-            if(FindStoreItemById(prod.GetId()) != null)
+            if(quantity > 0)
             {
-                FindStoreItemById(prod.GetId()).SetQuantity(FindStoreItemById(prod.GetId()).GetQuantity() + quantity);
-                return FindStoreItemById(prod.GetId());
+                if (FindStoreItemById(prod.GetId()) != null)
+                {
+                    FindStoreItemById(prod.GetId()).SetQuantity(FindStoreItemById(prod.GetId()).GetQuantity() + quantity);
+                    return FindStoreItemById(prod.GetId());
 
+                }
+                else
+                {
+                    StoreItem storeItem = new StoreItem(prod, quantity);
+                    Items.Add(storeItem);
+                    return storeItem;
+                }
             }
             else
             {
-                return new(prod, quantity);
+                return null;
             }
-
-
         }
 
         public StoreItem RemoveStoreItem(int id, int quantity)
         {
-            if (Items.Contains(FindStoreItemById(id)))
+            if (FindStoreItemById(id) != null)
             {
-                FindStoreItemById(id).SetQuantity(FindStoreItemById(id).GetQuantity() - quantity);
-                return FindStoreItemById(id);
+                if(FindStoreItemById(id).GetQuantity() - quantity <= 0)
+                {
+                    FindStoreItemById(id).SetQuantity(0);
+                    return FindStoreItemById(id);
+                }
+                else
+                {
+                    FindStoreItemById(id).SetQuantity(FindStoreItemById(id).GetQuantity() - quantity);
+                    return FindStoreItemById(id);
+                }
             }
             else
             {
