@@ -1,42 +1,47 @@
-﻿using System;
+﻿using CKK.Logic.Exceptions;
+using CKK.Logic.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CKK.Logic.Models
 {
-    public class ShoppingCart
+    public class ShoppingCart : IShoppingCart
     {
-        private Customer _customer;
-        private List<ShoppingCartItem> Products = new();
+        public Customer Customer { get; set; }
+        public List<ShoppingCartItem> Products { get; set; }
+        
 
         public ShoppingCart(Customer cust)
         {
-            _customer = cust;
+            Products = new List<ShoppingCartItem>();
+            Customer = cust;
         }
 
         public int GetCustomerId()
         {
-            return _customer.GetId();
+            return Customer.Id;
         }
 
         public ShoppingCartItem AddProduct(Product prod, int quantity)
         {
-           if(GetProductById(prod.GetId()) != null && quantity > 0)
+            if(quantity > 0)
             {
-                GetProductById(prod.GetId()).SetQuantity(GetProductById(prod.GetId()).GetQuantity() + quantity);
-                return GetProductById(prod.GetId());
-            }
-            else
-            {
-                if(quantity > 0)
+                if(GetProductById(prod.Id) != null)
                 {
-                    
-                    return new(prod, quantity);
+                    GetProductById(prod.Id).Quantity += quantity;
+                    return GetProductById(prod.Id);
                 }
                 else
                 {
-                    return null;
+                    ShoppingCartItem shoppingCartItem = new ShoppingCartItem(prod, quantity);
+                    Products.Add(shoppingCartItem);
+                    return shoppingCartItem;
                 }
+            }
+            else
+            {
+                throw new InventoryItemStockTooLowException("Inventory Too Low");
             }
         }
 
@@ -47,30 +52,40 @@ namespace CKK.Logic.Models
 
         public ShoppingCartItem RemoveProduct(int id, int quantity)
         {
-           if (GetProductById(id) != null)
+            if (GetProductById(id) != null && quantity > 0)
             {
-                if(GetProductById(id).GetQuantity() - quantity < 0)
+                if (GetProductById(id).Quantity - quantity <= 0)
                 {
+                    GetProductById(id).Quantity = 0;
                     Products.Remove(GetProductById(id));
-                    return null;
+                    ShoppingCartItem shoppingCartItem = new(null, 0);
+                    return shoppingCartItem;
                 }
                 else
                 {
-                    GetProductById(id).SetQuantity(GetProductById(id).GetQuantity() - quantity);
+                    GetProductById(id).Quantity -= quantity;
                     return GetProductById(id);
                 }
             }
+            else if (GetProductById(id) == null)
+            {
+                throw new ProductDoesNotExistException("Product does not exist");
+            }
             else
             {
-                return null;
+                throw new ArgumentOutOfRangeException();
             }
         }
 
         public ShoppingCartItem GetProductById(int id)
         {
+            if(id < 0)
+            {
+                throw new InvalidIdException("Invalid ID");
+            }
             foreach (var cartItem in Products)
             {
-                if (cartItem.GetProduct().GetId() == id)
+                if (cartItem.Product.Id == id)
                 {
                     return cartItem;
                 }

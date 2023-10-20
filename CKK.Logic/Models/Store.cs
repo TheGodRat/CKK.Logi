@@ -1,69 +1,60 @@
-﻿using System;
+﻿using CKK.Logic.Interfaces;
+using System;
 using System.Collections.Generic;
+using CKK.Logic.Exceptions;
 using System.Linq;
 
 namespace CKK.Logic.Models
 {
-    public class Store
+    public class Store : Entity, IStore
     {
-        private int _id;
-        private string _name;
         private List<StoreItem> Items = new();
-
-        public int GetId()
-        {
-            return _id;
-        }
-
-        public void SetId(int id)
-        {
-            _id = id;
-        }
-
-        public string GetName()
-        {
-            return _name;
-        }
-
-        public void SetName(string name)
-        {
-            _name = name;
-        }
    
         public StoreItem AddStoreItem(Product prod, int quantity)
         {
-            if(FindStoreItemById(prod.GetId()) != null)
+            if(quantity > 0)
             {
-                FindStoreItemById(prod.GetId()).SetQuantity(FindStoreItemById(prod.GetId()).GetQuantity() + quantity);
-                return FindStoreItemById(prod.GetId());
+                if (FindStoreItemById(prod.Id) != null)
+                {
+                    FindStoreItemById(prod.Id).Quantity += quantity;
+                    return FindStoreItemById(prod.Id);
 
+                }
+                else
+                {
+                    StoreItem storeItem = new StoreItem(prod, quantity);
+                    Items.Add(storeItem);
+                    return storeItem;
+                }
             }
             else
             {
-                return new(prod, quantity);
+                throw new InventoryItemStockTooLowException("Inventory Too Low");
             }
-
-
         }
 
         public StoreItem RemoveStoreItem(int id, int quantity)
         {
-            if (FindStoreItemById(id) != null)
+            if (FindStoreItemById(id) != null && quantity > 0)
             {
-                if(FindStoreItemById(id).GetQuantity() - quantity < 0)
+                if(FindStoreItemById(id).Quantity - quantity <= 0)
                 {
-                    FindStoreItemById(id).SetQuantity(0);
+                    FindStoreItemById(id).Quantity = 0;
                     return FindStoreItemById(id);
                 }
                 else
                 {
-                    FindStoreItemById(id).SetQuantity(FindStoreItemById(id).GetQuantity() - quantity);
+                    FindStoreItemById(id).Quantity -= quantity;
                     return FindStoreItemById(id);
                 }
             }
+            else if (FindStoreItemById(id) == null)
+            {
+                throw new ProductDoesNotExistException("Product does not exist");
+            }
             else
             {
-                return null;
+                throw new ArgumentOutOfRangeException();
             }
             
 
@@ -71,9 +62,13 @@ namespace CKK.Logic.Models
     
         public StoreItem FindStoreItemById(int id)
         {
+            if(id < 0)
+            {
+                throw new InvalidIdException("Invalid ID");
+            }
             foreach(var item in Items)
             {
-                if(item.GetProduct().GetId() == id)
+                if(item.Product.Id == id)
                 {
                     return item;
                 }
